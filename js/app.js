@@ -29,10 +29,14 @@ const loadAccount = (parentEl, data, err) => {
 //TODO: call loadAccount
             //loadAccount(evt, null, null);
             //alert ('Клик по кнопке');
-            setTimeout(function(){
-                location.reload();
-            }, 2000);
+            showLoader(accountsEl);
+            loadAccountServer(evt);
         };
+
+          /*  setTimeout(function () {
+                loadAccountServer(evt);
+            }, 200);
+        };*/
         return;
     }
     parentEl.innerHTML = `
@@ -43,22 +47,25 @@ const loadAccount = (parentEl, data, err) => {
 };
 
 
+const loadAccountServer = () => {
+
+    fetch(`${API_URL}/hw16`)
+
+        .then((response) => {
+            if (!response.ok) {
+                throw new Error('err.server');
+            }
+            return response.json();
+        })
+        .then((data) => {
+                loadAccount(accountsEl, data);
+            }
+        )
+        .catch((error) => {
+            loadAccount(accountsEl, null, 'err.common');
+        });
+}
+
 const accountsEl = document.getElementById('accounts-and-cards');
 showLoader(accountsEl);
-
-fetch(`${API_URL}/hw16`)
-
-    .then((response) => {
-        if (!response.ok) {
-            throw new Error('err.server');
-        }
-        return response.json();
-    })
-    .then((data) => {
-            loadAccount(accountsEl, data);
-        }
-    )
-    .catch((error) => {
-        loadAccount(accountsEl, null, 'err.common');
-    });
-
+loadAccountServer();
